@@ -13,10 +13,21 @@ load_dotenv()
 app = FastAPI()
 
 # Initialize Firebase
-import os
 
-cred = credentials.Certificate(os.path.join(os.getcwd(), "serviceAccountKey.json"))
-firebase_admin.initialize_app(cred)
+import os
+import json
+import firebase_admin
+from firebase_admin import credentials
+
+firebase_credentials_json = os.getenv("FIREBASE_CREDENTIALS")
+
+if firebase_credentials_json:
+    firebase_credentials = json.loads(firebase_credentials_json)
+    cred = credentials.Certificate(firebase_credentials)
+    firebase_admin.initialize_app(cred)
+else:
+    raise ValueError("Firebase credentials not found in environment variables")
+
 
 @app.get("/")
 def home():
